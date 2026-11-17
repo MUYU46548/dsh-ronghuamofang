@@ -1,0 +1,50 @@
+{
+  "name": "dsh-novelforge",
+  "version": "0.1.0",
+  "description": "绒花墨坊（NovelForge）× DSH：在 DSH 会话里读章、看批注与结构指标、生成改稿候选（只算不落）。采用归作者，插件不代拍。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "novelforge",
+    "ronghuamofang"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MUYU46548/dsh-novelforge.git"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "dsh": ">=0.2.1-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "compatibility": {
+      "dsh": ">=0.2.1-rc.2",
+      "dshReleases": {
+        "0.2.2-rc.3": "unverified"
+      }
+    }
+  },
+  "scripts": {
+    "test": "node --test test/http.test.mjs test/tools.test.mjs test/plugin.test.mjs"
+  },
+  "author": "MUYU46548",
+  "license": "MIT"
+}
