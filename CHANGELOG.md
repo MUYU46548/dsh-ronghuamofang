@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## 0.3.0 —— 2026-11-26
+
+这一版只做连接件的三件事：**错误不再说谎、版本错位能被看见、客户端跟随 fallback**。
+判据 64 条离线 + 8 条反证（`test/counter-proof.mjs`）。
+
+### 修
+
+- **`mofang_paragraph_pending` 把读失败说成“没有候选”**：HTTP 400/500 时 value 里
+  `note` 带着原因，render 却直接回“没有待采用候选”（note 被丢掉）。模型会据此重出候选。
+  现在 `error` 字段进 render，并明说“这不等于没有候选”；错误分支不再带“没连上”的 hint。
+- **`mofang_chapter` 部分失败装 0**：`/chapters/annotations` 或 `/review/structure` 回 500 时，
+  render 是“未收口批注 0 条”、没有指标、error 空 —— 正是“0 条批注”的谎。
+  现在 `annotations_error` / `metrics_error` 如实进 value 与 render。
+
+### 加
+
+- **`lib/compat.js`**：宿主能力三态（webServer / systemPrompt / tools / configEditor /
+  clientModules / effect），结论进 `health.compat`。照 dsh-fangcun 的口径：判据是运行时
+  真实形状，不比版本号；**只提醒、不退出**。
+- **墨坊契约探针**：`probe()` 顺带读 `Server: NovelForgeAPI/x` 与 `/state` 形状，
+  结论进 `health.mofang.api`；`/state` 缺 stages / chapter_target_words / budget 时给 warnings。
+- **设置页版本区**：显示插件版本、墨坊 API（Server 头）、宿主自检 summary 与 warnings；
+  health 主路径被占时跟到 `/mofang/api/health.json`。
+- **兼容登记**：`dsh.compatibility.dshReleases` 补 `0.2.2-rc.5: compatible`（本机 health 全绿；
+  preview/pending 尚未实跑，所以不写 verified）。
+
+### 没动
+
+- 墨坊本体。`GET /chapters/paragraph/pending` 在真机上恒 400（`int(parse_qs list)`），
+  那是墨坊的 bug，插件改不了；本版只保证**失败时如实说**。
+
 ## 0.2.0 —— 2026-11-23
 
 真机 DSH 里跑通，并补上"在 DSH 内就能设置"。判据 56 条离线 + 4 条反证（`test/counter-proof.mjs`）。

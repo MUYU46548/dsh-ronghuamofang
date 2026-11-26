@@ -22,6 +22,8 @@ window.__ModuleLoader__.load({
     const { useEffect, useRef, useState } = React
 
     const HEALTH = '/mofang/health.json'
+    // 主路径被上一代残留占住时，插件会退到这个地址 —— 设置页也要跟过去，不能只认死一个
+    const HEALTH_FALLBACK = '/mofang/api/health.json'
     const SETTINGS = '/mofang/api/settings'
     const REFRESH_MS = 10_000
 
@@ -48,6 +50,7 @@ window.__ModuleLoader__.load({
       value: { flex: 1, wordBreak: 'break-all' },
       dim: { opacity: 0.65, fontSize: 12 },
       error: { color: 'var(--dsw-state-error-primary)', fontSize: 12, whiteSpace: 'pre-wrap' },
+      warn: { color: 'var(--dsw-state-warn-label)', fontSize: 12, whiteSpace: 'pre-wrap' },
       ok: { color: 'var(--dsw-state-success-primary)', fontSize: 12 },
       input: {
         flex: 1,
@@ -134,7 +137,9 @@ window.__ModuleLoader__.load({
       const refresh = async () => {
         let nextHealth = null
         let nextSettings = null
-        try { nextHealth = await getJson(HEALTH) } catch (e) { setError(String(e.message || e)) }
+        try { nextHealth = await getJson(HEALTH) } catch {
+          try { nextHealth = await getJson(HEALTH_FALLBACK) } catch (e) { setError(String(e.message || e)) }
+        }
         try { nextSettings = await getJson(SETTINGS) } catch (e) { setError(String(e.message || e)) }
         if (nextHealth) setHealth(nextHealth)
         if (nextSettings) applyBody(nextSettings)
@@ -199,9 +204,18 @@ window.__ModuleLoader__.load({
       const mofang = (health && health.mofang) || {}
       const tools = (health && health.tools) || {}
       const prompt = (health && health.prompt) || {}
+      const compat = (health && health.compat) || {}
+      const api = (mofang && mofang.api) || {}
       const conn = (settings && settings.effective) || (health && health.connection) || {}
       const writable = Boolean(settings && settings.writable)
       const reachable = Boolean(mofang.reachable)
+      // 墨坊 body 里没有 API 版本；能拿到的是 Server 头（NovelForgeAPI/0.2）。拿不到就写"未报到"，不猜。
+      const apiLabel = api.version
+        ? 'NovelForgeAPI/' + api.version
+        : (api.server ? String(api.server).split(' ')[0] : '未报到')
+      const versionLine = '插件 v' + ((health && health.plugin && health.plugin.version) || '?')
+        + ' · 墨坊 ' + apiLabel
+      const compatLine = compat.summary || '宿主自检未完成'
 
       const badgeText = !health ? '读取中' : reachable ? '已连接' : '未连接'
       const badgeStyle = !health
@@ -255,6 +269,22 @@ window.__ModuleLoader__.load({
                 ? '已注入（含「采用归作者」）'
                 : ('未注入' + (prompt.error ? ' · ' + prompt.error : ''))),
           ),
+          h(
+            'div',
+            { style: styles.row },
+            h('span', { style: styles.label }, '版本'),
+            h('span', { style: styles.value }, versionLine),
+          ),
+          h(
+            'div',
+            { style: styles.row },
+            h('span', { style: styles.label }, '宿主自检'),
+            h('span', { style: styles.value }, compatLine),
+          ),
+          ...(compat.warnings || []).map((w, i) =>
+            h('div', { key: 'cw' + i, style: styles.warn }, w)),
+          ...(api.warnings || []).map((w, i) =>
+            h('div', { key: 'aw' + i, style: styles.warn }, '墨坊契约：' + w)),
           mofang.lastAt
             ? h('div', { style: styles.dim }, '上次探活：' + mofang.lastAt)
             : null,

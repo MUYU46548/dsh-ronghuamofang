@@ -59,6 +59,24 @@ const cases = [
   // ④ health 路由冲突时不退让（新版 health 永远被旧残留挡住）
   mutate('lib/index.js', 'if (!isFallback && r.fallback && /duplicate/i.test(msg)) {',
     'if (false) {', ['test/plugin.test.mjs'], 'health 路由冲突不退让'),
+  // ⑤ 2026-11-26：候选读取失败被渲染成“没有候选”（400 被吞成 exists:false）
+  mutate('lib/tools.js', 'if (v.error) {', 'if (false) {',
+    ['test/tools.test.mjs'], '候选读取失败被说成没有候选'),
+  // ⑥ 2026-11-26：批注端点失败时装成“0 条”
+  mutate('lib/tools.js',
+    "const annotationsError = anns.ok ? '' : (anns.error || ('HTTP ' + anns.status))",
+    "const annotationsError = ''",
+    ['test/tools.test.mjs'], '批注端点失败装 0'),
+  // ⑦ 2026-11-26：结构指标端点失败时装成“没有越线指标”
+  mutate('lib/tools.js',
+    "const metricsError = struct.ok ? '' : (struct.error || ('HTTP ' + struct.status))",
+    "const metricsError = ''",
+    ['test/tools.test.mjs'], '指标端点失败装 0'),
+  // ⑧ 2026-11-26：宿主能力缺失却不告警（compat 一片绿）
+  mutate('lib/compat.js',
+    "if (state !== 'ok') warnings.push(warnOf(cap.key, cap.need, state))",
+    "if (false) warnings.push(warnOf(cap.key, cap.need, state))",
+    ['test/compat.test.mjs'], '宿主能力缺失不告警'),
 ]
 
 const bad = cases.filter((c) => c && c.skipped !== true && !(c.fail > 0))

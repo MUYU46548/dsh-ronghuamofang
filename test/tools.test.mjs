@@ -156,6 +156,30 @@ test('mofang_chapter：章不存在 → 说清是哪一章读不出来（不是�
   assert.match(v.error, /第 9 章不存在/)
 })
 
+test('mofang_chapter：批注/指标端点失败要说“没读到”，不许装 0', async () => {
+  const c = fakeClient({
+    '/chapters/paragraphs': {
+      ok: true,
+      data: {
+        ok: true, chapter: 5, layer: 'refined', count: 2,
+        paragraphs: [{ index: 0, text: '甲乙', chars: 2 }, { index: 1, text: '丙丁', chars: 2 }],
+      },
+    },
+    '/chapters/annotations': { ok: false, status: 500, data: null, error: '批注端点坏了', hint: '' },
+    '/review/structure': { ok: false, status: 500, data: null, error: '指标端点坏了', hint: '' },
+  })
+  const def = buildTools(c)[1]
+  const v = await def.execute({ n: 5 })
+  assert.equal(v.connected, true)
+  assert.equal(v.error, '')
+  assert.equal(v.annotations_error, '批注端点坏了')
+  assert.equal(v.metrics_error, '指标端点坏了')
+  const text = def.output.render({}, v)[0].text
+  assert.match(text, /批注未读到（批注端点坏了）/)
+  assert.match(text, /结构指标未读到（指标端点坏了）/)
+  assert.doesNotMatch(text, /未收口批注 0 条/)
+})
+
 /**
  * 为什么钉这条：2026-11-23 真机读第 1 章（273 段），`mofang_chapter` 把整张段落表
  * 渲染进上下文 ≈ 2k token，一次读章吃掉一截预算。纪律②写着"输出有界"，这里是漏洞。
@@ -256,6 +280,26 @@ test('mofang_paragraph_pending：exists:false 与“没连上”必须分得开�
   assert.equal(v2.exists, false)
 })
 
+test('mofang_paragraph_pending：HTTP 失败不许说成“没有候选”', async () => {
+  const c = fakeClient({
+    '/chapters/paragraph/pending': {
+      ok: false, status: 400,
+      data: { ok: false, error: 'chapter 与 index 必填' },
+      error: 'chapter 与 index 必填', hint: '',
+    },
+  })
+  const def = buildTools(c)[3]
+  const v = await def.execute({ chapter: 5, index: 2 })
+  assert.equal(v.connected, true)
+  assert.equal(v.exists, false)
+  assert.equal(v.error, 'chapter 与 index 必填')
+  assert.equal(v.hint, '', '连上了就不该带“没连上”的 hint')
+  const text = def.output.render({}, v)[0].text
+  assert.match(text, /chapter 与 index 必填/)
+  assert.match(text, /不等于“没有候选”/)
+  assert.doesNotMatch(text, /没有待采用候选/)
+})
+
 test('mofang_paragraph_drop：丢候选（正文不动）照抄墨坊回执', async () => {
   const c = fakeClient({
     '/chapters/paragraph/drop': { ok: true, status: 200, data: { ok: true, message: '已放弃候选（正文未改动）' } },
@@ -272,6 +316,7 @@ test('参数校验：章号/段号越界不发请求', async () => {
   assert.match(a.error, /n 必须是章号/)
   const b = await defs[3].execute({ chapter: 0, index: 0 })
   assert.equal(b.connected, true)
-  assert.match(b.note, /必填/)
+  assert.equal(b.exists, false)
+  assert.match(b.error, /必填/)
   assert.equal(c.calls.length, 0)
 })

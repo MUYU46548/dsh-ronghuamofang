@@ -41,6 +41,12 @@ function makeRoot({ withPrompt = true, withTools = true, withWeb = true, withEdi
       if (name === 'configEditor' && withEditor) {
         return { async edit(entry, change) { edits.push({ entry, change }); } }
       }
+      if (name === 'clientModules') {
+        return { clientPath(id) { return id === PLUGIN_NAME ? '/client.js' : undefined } }
+      }
+      if (name === 'webServer' && withWeb) {
+        return { register(r) { routes.push(r); return () => {} } }
+      }
       return undefined
     },
     inject(deps, cb) {
@@ -172,6 +178,13 @@ test('health：GET 返回能自证的事实', async () => {
   // 生效连接参数（注入 client 时没算 effective，但 health 里也要给出可读值）
   assert.ok(json.connection)
   assert.equal(typeof json.client.available, 'boolean')
+  // 宿主能力三态：这一版起 health 必须自报（不是等用户撞上“保存不了/设置页没有”）
+  assert.ok(json.compat, 'health 必须带 compat')
+  assert.equal(json.compat.capabilities.tools, 'ok')
+  assert.equal(json.compat.capabilities.configEditor, 'ok')
+  assert.equal(json.compat.capabilities.clientModules, 'ok')
+  assert.equal(json.compat.warnings.length, 0, JSON.stringify(json.compat.warnings))
+  assert.match(json.compat.summary, /正常/)
 })
 
 test('health：非 GET → 405（不给写）', async () => {

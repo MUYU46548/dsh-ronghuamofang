@@ -58,6 +58,22 @@ test('call：200 且 ok 字段为真 → ok:true', async () => {
   }
 })
 
+test('call：把墨坊的 Server 头带回来（体里没有 API 版本时只剩它）', async () => {
+  const { server, base } = await serve({
+    '/health': (req, res) => {
+      res.setHeader('Server', 'NovelForgeAPI/0.2')
+      res.end(JSON.stringify({ ok: true }))
+    },
+  })
+  try {
+    const c = new MofangClient({ baseUrl: base })
+    const r = await c.get('/health')
+    assert.equal(r.server, 'NovelForgeAPI/0.2')
+  } finally {
+    server.close()
+  }
+})
+
 test('call：HTTP 200 但 body 里 ok:false 也算失败（墨坊的域模块就是这么表达的）', async () => {
   const { server, base } = await serve({
     '/x': (req, res) => { res.end(JSON.stringify({ ok: false, error: '第 1 章不存在' })) },

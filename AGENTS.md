@@ -65,13 +65,15 @@
 
 **health**：`/mofang/health.json` 报能自证的事（规则段/工具/路由/设置页/连接参数来源/墨坊连没连）。
 主路径被上一代残留占住时自动退到 `/mofang/api/health.json`，并在 `routes.conflicts` 里**如实说出**这件事。
+从 0.3.0 起还报两样：`compat`（宿主能力三态 + warnings，见 `lib/compat.js`）与
+`mofang.api`（`Server: NovelForgeAPI/x` 头 + `/state` 形状 warnings）。**版本冲突只报警，不自动修**。
 "DSH 装没装"不归本插件报（插件活在 DSH 里，能跑就说明 DSH 在）。
 
 ## 4. 本地怎么跑
 
 ```powershell
-npm test                    # 56 条离线：假宿主 + 假 HTTP，不需要 DSH、不需要墨坊
-node test/counter-proof.mjs # 反证：把修复逐条改回坏版本，确认测试真会红，然后还原
+npm test                    # 64 条离线：假宿主 + 假 HTTP，不需要 DSH、不需要墨坊
+node test/counter-proof.mjs # 反证：把 8 条修复逐条改回坏版本，确认测试真会红，然后还原
 npm pack --dry-run          # 验发布包内容
 ```
 
@@ -93,5 +95,5 @@ curl.exe http://127.0.0.1:<端口>/mofang/health.json
   下一步就在这里加（照 dsh-fangcun 的 `widget.js` 骨架，注意让开右下角和顶部 40px 原生按钮区）。
 - **没有 proof（会话级自证）**：现在不知道"模型到底有没有先查判据再改"。
   这是 L1 的退出判据，值得做：订阅 `session/event` 的 `tool/call`，落 `tools.jsonl`。
-- **`/mofang/health.json` 这个路径在本次升级后暂时被旧代码的僵尸注册占着**，
-  要重启一次 DSH 才能回到原路径。期间 health 在 `/mofang/api/health.json`，设置页不受影响。
+- **没有墨坊端的三端诊断页**：方寸桌面端会读 app.asar / profile / compat 表做"插件 ↔ DSH"检查；
+  墨坊这边还没有等价物（插件只能从内部报 `compat` 与 `mofang.api`，看不到宿主版本号）。

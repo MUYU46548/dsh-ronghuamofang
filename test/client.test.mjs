@@ -104,7 +104,8 @@ test('⑤ 客户端半**只读**：不许出现候选/采用那类写端点', ()
   assert.equal(src.includes('/chapters/paragraph/preview'), false)
   assert.equal(src.includes('/chapters/paragraph/drop'), false)
   assert.equal(src.includes('/chapters/paragraph/apply'), false)
-  // 设置页只碰两条自己的路由
+  // 设置页只碰自己那两条路由；health 主路径被占时要跟到 fallback
   assert.equal(src.includes('/mofang/health.json'), true)
+  assert.equal(src.includes('/mofang/api/health.json'), true)
   assert.equal(src.includes('/mofang/api/settings'), true)
 })
