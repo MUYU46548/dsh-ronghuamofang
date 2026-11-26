@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { buildTools, MAX_CANDIDATE_CHARS, toolNames } from '../lib/tools.js'
+import { buildTools, MAX_CANDIDATE_CHARS, MAX_RENDER_PARAGRAPHS, toolNames } from '../lib/tools.js'
 
 /** 假墨坊：按路径返回预设回执；`off` 让它整体当作"没连上" */
 function fakeClient(table, { off = false } = {}) {
@@ -154,6 +154,48 @@ test('mofang_chapter：章不存在 → 说清是哪一章读不出来（不是�
   const v = await buildTools(c)[1].execute({ n: 9 })
   assert.equal(v.connected, true)
   assert.match(v.error, /第 9 章不存在/)
+})
+
+/**
+ * 为什么钉这条：2026-11-23 真机读第 1 章（273 段），`mofang_chapter` 把整张段落表
+ * 渲染进上下文 ≈ 2k token，一次读章吃掉一截预算。纪律②写着"输出有界"，这里是漏洞。
+ */
+test('mofang_chapter：**长章不抄全文**（默认最多 40 段，且说清还有多少没列）', async () => {
+  const paragraphs = Array.from({ length: 273 }, (_, i) => ({
+    index: i, text: '第' + i + '段开头', chars: 12 + (i % 7),
+  }))
+  const c = fakeClient({
+    '/chapters/paragraphs': { ok: true, data: { ok: true, chapter: 1, layer: 'checked', count: 273, paragraphs } },
+    '/chapters/annotations': { ok: true, data: { ok: true, open: 0, annotations: [] } },
+    '/review/structure': { ok: true, data: { ok: true, exists: true, chapters: [] } },
+  })
+  const def = buildTools(c)[1]
+  const v = await def.execute({ n: 1 })
+  assert.equal(v.total_paragraphs, 273)
+  assert.equal(v.paragraphs.length, MAX_RENDER_PARAGRAPHS)
+  assert.equal(v.para_from, 0)
+  const text = def.output.render({}, v)[0].text
+  assert.match(text, /还有 233 段没列/, '必须说清截了多少，否则模型以为这章只有 40 段')
+  // 渲染体量有界：40 段 ≈ 几百字，不是 273 段的整表
+  assert.ok(text.length < 1600, '渲染长度 ' + text.length + ' 太大')
+})
+
+test('mofang_chapter：para_from 能定位后半段（长章按窗口读）', async () => {
+  const paragraphs = Array.from({ length: 273 }, (_, i) => ({
+    index: i, text: '第' + i + '段', chars: 10,
+  }))
+  const c = fakeClient({
+    '/chapters/paragraphs': { ok: true, data: { ok: true, chapter: 1, layer: 'checked', count: 273, paragraphs } },
+    '/chapters/annotations': { ok: true, data: { ok: true, open: 0, annotations: [] } },
+    '/review/structure': { ok: true, data: { ok: true, exists: true, chapters: [] } },
+  })
+  const def = buildTools(c)[1]
+  const v = await def.execute({ n: 1, para_from: 200, para_count: 20 })
+  assert.equal(v.para_from, 200)
+  assert.equal(v.paragraphs[0].index, 200)
+  assert.equal(v.paragraphs.length, 20)
+  const text = def.output.render({ n: 1, para_from: 200 }, v)[0].text
+  assert.match(text, /还有 53 段没列/)
 })
 
 test('mofang_paragraph_preview：只算不落；空意见直接拒', async () => {

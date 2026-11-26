@@ -7,9 +7,10 @@
 #   dsh plugin --profile desktop add link:E:\CODE\CangKu\dsh-novelforge
 #   dsh plugin --profile headless add link:E:\CODE\CangKu\dsh-novelforge   # 只跑 headless 时
 #
-# ⚠ 装完要重启 DSH（桌面端要含托盘完全退出再开）—— 插件不进热更。
 # ⚠ id 与 name 必须等于 package.json 的 name：不一致的症状是“装了但插件不出现”
 #   （宿主按名字找模块）。测试里钉着这一条。
+# ⚠ config 留空 = 全用默认（127.0.0.1:8765 / 15000ms）。要改地址**别手改这里**，
+#   去 DSH 设置 →「绒花墨坊」保存 —— 那条路会写回本行，并且校验回环地址。
 # ============================================================================
 
 - insert:

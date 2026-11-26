@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "NovelForge",
+    "description": "Read NovelForge chapters inside DSH — paragraph indexes, open annotations, six structure metrics — and generate paragraph rewrite candidates without touching the text. There is no adopt action: writing a candidate into the manuscript is the author's own click in NovelForge. Settings hold the NovelForge address and request timeout."
+  }
+}
