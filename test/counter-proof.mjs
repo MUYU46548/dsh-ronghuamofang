@@ -77,6 +77,11 @@ const cases = [
     "if (state !== 'ok') warnings.push(warnOf(cap.key, cap.need, state))",
     "if (false) warnings.push(warnOf(cap.key, cap.need, state))",
     ['test/compat.test.mjs'], '宿主能力缺失不告警'),
+  // ⑨ 2026-11-26：自证不判“先查后改”的顺序
+  mutate('lib/proof.js',
+    'g.chapterBeforePreview = g.chapterAt > 0 && g.previewAt > 0 && g.chapterAt < g.previewAt',
+    'g.chapterBeforePreview = g.chapterAt > 0 && g.previewAt > 0',
+    ['test/proof.test.mjs'], '先查后改不判顺序'),
 ]
 
 const bad = cases.filter((c) => c && c.skipped !== true && !(c.fail > 0))

@@ -20,13 +20,14 @@ function fullHost() {
       return undefined
     },
     effect() {},
+    on() { return () => {} },
   }
 }
 
-test('全绿：六项宿主能力都 ok，warnings 为空', () => {
+test('全绿：七项宿主能力都 ok，warnings 为空', () => {
   const r = checkHost(fullHost())
   assert.equal(r.warnings.length, 0, JSON.stringify(r.warnings))
-  assert.match(r.summary, /全部 6 项宿主能力正常/)
+  assert.match(r.summary, /全部 7 项宿主能力正常/)
   for (const cap of HOST_CAPABILITIES) assert.equal(r.capabilities[cap.key], 'ok', cap.key)
 })
 

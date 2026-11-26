@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import plugin, { apply, PLUGIN_NAME, PLUGIN_VERSION, ROUTES, ENDPOINTS } from '../lib/index.js'
@@ -20,6 +21,7 @@ function makeRoot({ withPrompt = true, withTools = true, withWeb = true, withEdi
   const routes = []
   const effects = []
   const edits = []
+  const handlers = []
   const root = {
     logger: { info() {}, warn() {} },
     fiber: { entry: { options: { id: PLUGIN_NAME } } },
@@ -28,6 +30,7 @@ function makeRoot({ withPrompt = true, withTools = true, withWeb = true, withEdi
     tools,
     routes,
     edits,
+    handlers,
     get(name) {
       if (name === 'systemPrompt' && withPrompt) {
         return {
@@ -58,7 +61,7 @@ function makeRoot({ withPrompt = true, withTools = true, withWeb = true, withEdi
       })
     },
     effect(fn) { effects.push(fn); return fn() },
-    on() { return () => {} },
+    on(name, fn) { handlers.push({ name, fn }); return () => {} },
   }
   return root
 }
@@ -185,6 +188,32 @@ test('health：GET 返回能自证的事实', async () => {
   assert.equal(json.compat.capabilities.clientModules, 'ok')
   assert.equal(json.compat.warnings.length, 0, JSON.stringify(json.compat.warnings))
   assert.match(json.compat.summary, /正常/)
+})
+
+test('会话级自证：health 看得到 mofang_chapter 在 preview 之前', async () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'nf-proof-home-'))
+  const old = process.env.DSH_HOME
+  process.env.DSH_HOME = home
+  try {
+    const root = makeRoot()
+    apply(root, { client: fakeClient() })
+    const sub = root.handlers.find((x) => x.name === 'session/event')
+    assert.ok(sub, '必须订阅 session/event')
+    const s = { id: 's-proof' }
+    sub.fn(s, { type: 'tool/call', data: { name: 'mofang_chapter', turn: 1 } })
+    sub.fn(s, { type: 'tool/call', data: { name: 'mofang_paragraph_preview', turn: 1 } })
+
+    const { json } = await call(byPath(root.routes, '/mofang/health.json').handler, { method: 'GET' })
+    assert.equal(json.proof.enabled, true, JSON.stringify(json.proof))
+    assert.equal(json.proof.turns.chapterBeforePreview, 1, JSON.stringify(json.proof))
+    assert.equal(json.proof.turns.previewWithoutChapter, 0)
+    assert.equal(json.proof.lastTool, 'mofang_paragraph_preview')
+    assert.ok(fs.existsSync(path.join(home, 'dsh-novelforge', 'tools.jsonl')))
+  } finally {
+    if (old === undefined) delete process.env.DSH_HOME
+    else process.env.DSH_HOME = old
+    fs.rmSync(home, { recursive: true, force: true })
+  }
 })
 
 test('health：非 GET → 405（不给写）', async () => {

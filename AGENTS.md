@@ -40,7 +40,8 @@
 | 10 | 设置写回：`root.fiber.entry` + `configEditor.edit(entry, change)` | 保存后 Loader 重启该行，`apply(root, config)` 拿到新 config |
 | 11 | `configEditor` / `clientModules` 比插件晚就绪 | health 与 GET 路由要**当场**问，不能照抄 apply 时那一拍 |
 | 12 | 带 `dsh.client` 的包，客户端半经 `clientModules` 进模块表 | `clientPath(id)` 为空 = 还没进表（manifest 改了要重启条目）；设置页靠 `settings.section` slot |
-| 13 | HMR 开启时，Plugin Manager 的一次开关会触发 recomposition | 它会按磁盘比较替换 `link:` 包**已加载的文件** —— 这样改完代码不用重启 DSH（但**路由的僵尸注册**不会因此消失，那是第 9 条） |
+| 13 | HMR 开启时，Plugin Manager 的一次开关会触发 recomposition | 它会按磁盘比较替换 `link:` 包**已加载的文件** —— 这样改完代码不用重启 DSH（但**路由的僵尸注册**不会因此消失，那是第 9 条）。⚠ 2026-11-26 事故：**有会话在跑时开关插件会打断在跑的回合**；加载改动前先确认无在跑会话，或让用户手动重载 |
+| 14 | `session/event` 的签名是 `(session, event)`，`session` 是**对象** | 真 id 在 `session.id` / `session.header.id`；写 `String(session)` 会得到 `[object Object]`，不同会话互相顶掉。取不出 id 就跳过，**绝不编 id** |
 
 ## 3. 六条链路（改之前先看懂）
 
@@ -67,13 +68,16 @@
 主路径被上一代残留占住时自动退到 `/mofang/api/health.json`，并在 `routes.conflicts` 里**如实说出**这件事。
 从 0.3.0 起还报两样：`compat`（宿主能力三态 + warnings，见 `lib/compat.js`）与
 `mofang.api`（`Server: NovelForgeAPI/x` 头 + `/state` 形状 warnings）。**版本冲突只报警，不自动修**。
+从 0.4.0 起报 `proof`：订阅 `session/event` 的 `tool/call`，把 `mofang_*` 调用顺序记到
+`~/.dsh/dsh-novelforge/tools.jsonl`（只记工具名，不记参数）；`turns.chapterBeforePreview`
+才是“先查后改”，先 preview 后 chapter 记成 `previewWithoutChapter`。
 "DSH 装没装"不归本插件报（插件活在 DSH 里，能跑就说明 DSH 在）。
 
 ## 4. 本地怎么跑
 
 ```powershell
-npm test                    # 64 条离线：假宿主 + 假 HTTP，不需要 DSH、不需要墨坊
-node test/counter-proof.mjs # 反证：把 8 条修复逐条改回坏版本，确认测试真会红，然后还原
+npm test                    # 70 条离线：假宿主 + 假 HTTP，不需要 DSH、不需要墨坊
+node test/counter-proof.mjs # 反证：把 9 条修复逐条改回坏版本，确认测试真会红，然后还原
 npm pack --dry-run          # 验发布包内容
 ```
 
@@ -91,9 +95,7 @@ curl.exe http://127.0.0.1:<端口>/mofang/health.json
 
 ## 5. 未做（如实列出，别当成"已经能用"）
 
-- **没有挂件/浮层**：`webserver/index-inject` 那一步还没用上。想在 DSH 界面里看"未收口批注 3 条"，
-  下一步就在这里加（照 dsh-fangcun 的 `widget.js` 骨架，注意让开右下角和顶部 40px 原生按钮区）。
-- **没有 proof（会话级自证）**：现在不知道"模型到底有没有先查判据再改"。
-  这是 L1 的退出判据，值得做：订阅 `session/event` 的 `tool/call`，落 `tools.jsonl`。
-- **没有墨坊端的三端诊断页**：方寸桌面端会读 app.asar / profile / compat 表做"插件 ↔ DSH"检查；
-  墨坊这边还没有等价物（插件只能从内部报 `compat` 与 `mofang.api`，看不到宿主版本号）。
+- **挂件/浮层**：用户 2026-11-26 裁定（S2=A）**不做纯状态挂件** —— 状态行已覆盖模型侧信息。
+  唯一有行动价值的是"待采用提醒"，但它要先等墨坊加"列出全部待采用候选"的端点，再让插件轮询。
+- **墨坊端的三端诊断**：2026-11-26 已落地（`/dsh/diagnose` + 「DSH 诊断」面板）；
+  接线随施工侧的 `nf_api.py` / `App.vue` 一起提交，安装版重建后才在界面可见。

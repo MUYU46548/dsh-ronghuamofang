@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 0.4.0 —— 2026-11-26
+
+会话级自证（proof）：回答“模型到底有没有先查判据、再出候选”——**只记录，不改模型行为**。
+判据 70 条离线 + 9 条反证。
+
+### 加
+
+- **`lib/proof.js`**：订阅 `session/event` 的 `tool/call`，把 `mofang_*` 的调用顺序记到
+  `~/.dsh/dsh-novelforge/tools.jsonl`（上限 500 行）。只记时间/会话/轮次/工具名/序号；
+  **不记参数**（`feedback` 里可能有正文或私事）。
+- **`health.proof`**：`rows`、`turns.total`、`turns.chapterBeforePreview`、
+  `turns.previewWithoutChapter`、`lastTurn.tools`。同轮里 `mofang_chapter` 在
+  `mofang_paragraph_preview` 之前才算“先查后改”；先 preview 后 chapter 或没查，记成
+  `previewWithoutChapter`，不装绿。
+- **`compat` 增第七项 `session/event`**：真调一次 `root.on` 再注销；宿主不给这个能力时
+  health 会红，不把“收不到事件”说成正常。
+
+### 没做（用户 2026-11-26 答 S2=A）
+
+- 挂件/浮层不做：纯状态挂件与状态行重复；有行动价值的“待采用提醒”要先等墨坊加
+  “列出全部待采用候选”的端点。
+
 ## 0.3.0 —— 2026-11-26
 
 这一版只做连接件的三件事：**错误不再说谎、版本错位能被看见、客户端跟随 fallback**。
