@@ -1,6 +1,5 @@
 # dsh-ronghuamofang
 
-> npm 包名 `dsh-ronghuamofang`（原名 `dsh-novelforge` 被 npm 以“与 `dsh-novel-forge` 太像”拒绝）。
 > GitHub 仓库：[MUYU46548/dsh-ronghuamofang](https://github.com/MUYU46548/dsh-ronghuamofang)。
 
 绒花墨坊（NovelForge）× DSH 的薄插件：让 DSH 会话**看得见判据、出得了候选**，**采用仍归作者**。
