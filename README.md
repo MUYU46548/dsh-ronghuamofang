@@ -2,7 +2,6 @@
 
 > npm 包名 `dsh-ronghuamofang`（原名 `dsh-novelforge` 被 npm 以“与 `dsh-novel-forge` 太像”拒绝）。
 > GitHub 仓库：[MUYU46548/dsh-ronghuamofang](https://github.com/MUYU46548/dsh-ronghuamofang)。
-> 本地目录暂仍叫 `dsh-novelforge`（两个 profile 的 `link:` 指向它，改名要等重启窗口）。
 
 绒花墨坊（NovelForge）× DSH 的薄插件：让 DSH 会话**看得见判据、出得了候选**，**采用仍归作者**。
 在 DSH 设置里可以直接改墨坊地址与请求超时，不用碰环境变量。
@@ -36,7 +35,7 @@
 
 ## 安装
 
-在 DSH 的 **插件** 页里安装本地目录 `E:\CODE\CangKu\dsh-novelforge`，或（开发态）：
+在 DSH 的 **插件** 页里按包名安装 `dsh-ronghuamofang`（npm 包 / GitHub Release 的 tgz 都行），或（开发态）：
 
 ```powershell
 # 1. 起墨坊服务（桌面端打开即可，或命令行）
@@ -45,8 +44,8 @@ python scripts/nf_api.py --port 8765
 # 2. 把插件挂进 DSH profile（发布版）
 dsh plugin --profile desktop add dsh-ronghuamofang
 
-# 开发态用本地目录（包名仍以 package.json 为准）
-dsh plugin --profile desktop add link:E:\CODE\CangKu\dsh-novelforge
+# 开发态用源码目录（包名仍以 package.json 为准）
+dsh plugin --profile desktop add link:<插件源码目录>
 ```
 
 ## 设置
