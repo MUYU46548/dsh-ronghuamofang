@@ -8,6 +8,12 @@
 把"改稿这条链"接进 DSH：**规则段 + 5 个工具 + 一行现状 + health + 设置页**，全部只走本机 HTTP，
 **不提供"采用"** —— 采用是作者的签字动作。
 
+> **包名 = `dsh-ronghuamofang`**（2026-11-26 改名后发布；原名 `dsh-novelforge` 被 npm 以
+> “与 `dsh-novel-forge` 太像”拒绝）。本地目录与 GitHub 仓库暂仍叫 `dsh-novelforge`。
+> 改包名要同时改：`package.json name` / `lib/index.js PLUGIN_NAME` / `lib/health.js` 的
+> `plugin.name` / `client.js` 的两处 id / `cordis.patch.yml` 的 id+name / 自证账本目录 / 两个
+> profile 的依赖与 bundles —— 测试会钉住前五项。
+
 ## 1. 硬边界（越界即错，测试里钉着）
 
 - **DSH 概念只在 `lib/index.js`**：`root.inject/get/on/effect`、`webServer.register`、
@@ -69,7 +75,7 @@
 从 0.3.0 起还报两样：`compat`（宿主能力三态 + warnings，见 `lib/compat.js`）与
 `mofang.api`（`Server: NovelForgeAPI/x` 头 + `/state` 形状 warnings）。**版本冲突只报警，不自动修**。
 从 0.4.0 起报 `proof`：订阅 `session/event` 的 `tool/call`，把 `mofang_*` 调用顺序记到
-`~/.dsh/dsh-novelforge/tools.jsonl`（只记工具名，不记参数）；`turns.chapterBeforePreview`
+`~/.dsh/dsh-ronghuamofang/tools.jsonl`（只记工具名，不记参数）；`turns.chapterBeforePreview`
 才是“先查后改”，先 preview 后 chapter 记成 `previewWithoutChapter`。
 "DSH 装没装"不归本插件报（插件活在 DSH 里，能跑就说明 DSH 在）。
 

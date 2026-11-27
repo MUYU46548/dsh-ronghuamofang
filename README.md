@@ -1,4 +1,7 @@
-# dsh-novelforge
+# dsh-ronghuamofang
+
+> npm 包名 `dsh-ronghuamofang`（原名 `dsh-novelforge` 被 npm 以“与 `dsh-novel-forge` 太像”拒绝）。
+> 本地目录与 GitHub 仓库暂仍叫 `dsh-novelforge`，仓库改名后续单独做；两者不一致时**以包名为准**。
 
 绒花墨坊（NovelForge）× DSH 的薄插件：让 DSH 会话**看得见判据、出得了候选**，**采用仍归作者**。
 在 DSH 设置里可以直接改墨坊地址与请求超时，不用碰环境变量。
@@ -17,7 +20,7 @@
 - **一行现状**：`绒花墨坊 · 已连接 · 《书名》 · 第 3 阶段 · 未收口批注 2 条`
 - **设置页**：DSH 设置 →「绒花墨坊」——看状态、改地址、改超时、点「测试连接」
 - **会话级自证**：订阅 `session/event`，把 `mofang_*` 调用顺序记到
-  `~/.dsh/dsh-novelforge/tools.jsonl`（只记工具名，不记参数）；`health.proof` 直接出
+  `~/.dsh/dsh-ronghuamofang/tools.jsonl`（只记工具名，不记参数）；`health.proof` 直接出
   “先查判据再出候选”的数
 - **`/mofang/health.json`**：插件自证（规则段/工具/路由/设置页注册没、墨坊连没连、连接参数从哪来）
   - 还报**宿主能力三态**（`compat`：webServer / systemPrompt / tools / configEditor / clientModules / effect）
@@ -38,7 +41,10 @@
 # 1. 起墨坊服务（桌面端打开即可，或命令行）
 python scripts/nf_api.py --port 8765
 
-# 2. 把插件挂进 DSH profile
+# 2. 把插件挂进 DSH profile（发布版）
+dsh plugin --profile desktop add dsh-ronghuamofang
+
+# 开发态用本地目录（包名仍以 package.json 为准）
 dsh plugin --profile desktop add link:E:\CODE\CangKu\dsh-novelforge
 ```
 
@@ -102,7 +108,7 @@ npm pack --dry-run                     # 验发布包内容
 - **版本冲突只提醒、不自动修**：插件不比版本号，只报形状。墨坊 body 里没有 API 版本，
   `Server: NovelForgeAPI/x` 是唯一线索；`/state` 形状不对会进 `health.mofang.api.warnings`。
 - 契约版本 `CONTRACT_VERSION = 1`：墨坊改了这几个端点的字段/语义就 +1（目前仅登记，没有对端可比）。
-- **自证账本**只在 `~/.dsh/dsh-novelforge/tools.jsonl`：只记时间/会话/轮次/工具名/序号，
+- **自证账本**只在 `~/.dsh/dsh-ronghuamofang/tools.jsonl`：只记时间/会话/轮次/工具名/序号，
   不记参数与正文（`feedback` 里可能有书稿或私事），上限 500 行。
 - 墨坊安装版（≤ 2026-11-25）的 `GET /chapters/paragraph/pending` 有解析 bug（恒 400），
   插件会如实报「候选读不出来」；修在墨坊侧，不在本插件。

@@ -1,5 +1,5 @@
 /**
- * dsh-novelforge —— client half（DSH 设置里的「绒花墨坊」一节）。
+ * dsh-ronghuamofang —— client half（DSH 设置里的「绒花墨坊」一节）。
  *
  * 为什么需要它：DSH 0.2 线的内置 Settings 只自动渲染插件 `Config` 里的 volatile 字段，
  * 而 `Config` 要 `@deepseek-ai/schemastery`；本仓零依赖，不能引。第三方插件的实际做法
@@ -15,7 +15,7 @@
  * ⚠ 它**只读**墨坊：没有"采用"按钮，也不该有 —— 采用是作者的签字动作。
  */
 window.__ModuleLoader__.load({
-  id: 'dsh-novelforge',
+  id: 'dsh-ronghuamofang',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -358,7 +358,7 @@ window.__ModuleLoader__.load({
       if (slots === undefined) return
       slots.inject('settings.section', () => slots.register({
         name: 'settings.section',
-        id: 'dsh-novelforge',
+        id: 'dsh-ronghuamofang',
         order: 171,
         label: () => '绒花墨坊',
       }, Section))

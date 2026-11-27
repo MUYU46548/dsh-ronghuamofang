@@ -1,6 +1,11 @@
 # CHANGELOG
 
-## 0.4.0 —— 2026-11-26
+## 0.4.0 —— 2026-11-26（首次发布名为 `dsh-ronghuamofang`）
+
+> **包名**：npm 以“与 `dsh-novel-forge` 太像”拒绝了 `dsh-novelforge`（E403）。按作者 2026-11-26
+> 的裁决改成 `dsh-ronghuamofang` 后首次发布 0.4.0。`PLUGIN_NAME`、`cordis.patch.yml`、
+> 两个 profile 的依赖/bundles、自证账本目录（`~/.dsh/dsh-ronghuamofang/`）同步改名；
+> 本地目录与 GitHub 仓库暂仍叫 `dsh-novelforge`，仓库改名后续单独做。
 
 会话级自证（proof）：回答“模型到底有没有先查判据、再出候选”——**只记录，不改模型行为**。
 判据 70 条离线 + 9 条反证。
@@ -8,7 +13,7 @@
 ### 加
 
 - **`lib/proof.js`**：订阅 `session/event` 的 `tool/call`，把 `mofang_*` 的调用顺序记到
-  `~/.dsh/dsh-novelforge/tools.jsonl`（上限 500 行）。只记时间/会话/轮次/工具名/序号；
+  `~/.dsh/dsh-ronghuamofang/tools.jsonl`（上限 500 行）。只记时间/会话/轮次/工具名/序号；
   **不记参数**（`feedback` 里可能有正文或私事）。
 - **`health.proof`**：`rows`、`turns.total`、`turns.chapterBeforePreview`、
   `turns.previewWithoutChapter`、`lastTurn.tools`。同轮里 `mofang_chapter` 在

@@ -1,5 +1,5 @@
 # ============================================================================
-# dsh-novelforge —— DSH bundle patch（插件的“挂载声明”）
+# dsh-ronghuamofang —— DSH bundle patch（插件的“挂载声明”）
 #
 # DSH 启动时按 bundle 层栈叠加各插件的 patch，本文件把绒花墨坊插件插进 profile 的配置树。
 #
@@ -14,5 +14,5 @@
 # ============================================================================
 
 - insert:
-    - id: dsh-novelforge
-      name: dsh-novelforge
+    - id: dsh-ronghuamofang
+      name: dsh-ronghuamofang

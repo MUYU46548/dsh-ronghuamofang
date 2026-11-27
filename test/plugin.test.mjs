@@ -168,7 +168,7 @@ test('health：GET 返回能自证的事实', async () => {
   const { status, json } = await call(byPath(root.routes, '/mofang/health.json').handler, { method: 'GET' })
   assert.equal(status, 200)
   assert.equal(json.ok, true)
-  assert.equal(json.plugin.name, 'dsh-novelforge')
+  assert.equal(json.plugin.name, PKG.name)
   assert.equal(json.plugin.version, PLUGIN_VERSION)
   assert.equal(json.tools.registered, true)
   assert.equal(json.tools.names.length, 5)
@@ -208,7 +208,7 @@ test('会话级自证：health 看得到 mofang_chapter 在 preview 之前', asy
     assert.equal(json.proof.turns.chapterBeforePreview, 1, JSON.stringify(json.proof))
     assert.equal(json.proof.turns.previewWithoutChapter, 0)
     assert.equal(json.proof.lastTool, 'mofang_paragraph_preview')
-    assert.ok(fs.existsSync(path.join(home, 'dsh-novelforge', 'tools.jsonl')))
+    assert.ok(fs.existsSync(path.join(home, PKG.name, 'tools.jsonl')))
   } finally {
     if (old === undefined) delete process.env.DSH_HOME
     else process.env.DSH_HOME = old

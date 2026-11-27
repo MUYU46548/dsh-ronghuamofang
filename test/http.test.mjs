@@ -129,7 +129,7 @@ test('POST 带 body 且必定报明来源头', async () => {
     const c = new MofangClient({ baseUrl: base })
     const r = await c.post('/echo', { chapter: 3 })
     assert.equal(r.ok, true)
-    assert.equal(seen.source, 'dsh-novelforge')
+    assert.equal(seen.source, 'dsh-ronghuamofang')
     assert.deepEqual(seen.body, { chapter: 3 })
   } finally {
     server.close()
