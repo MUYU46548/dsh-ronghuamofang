@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.4.1 —— 2026-11-27
+
+**只改发布元数据与文档，代码与 0.4.0 完全相同**（70 条离线 + 9 条反证照旧全绿）。
+
+- `repository` 指向新仓 `https://github.com/MUYU46548/dsh-ronghuamofang`：0.4.0 发布时它还指着
+  一个在 GitHub 上并不存在的 `dsh-novelforge` 仓库，npm 包页的仓库链接是 404。
+  已发布的 0.4.0 元数据改不了，只能靠这一版刷新。
+- 文档写明：GitHub 仓已按新包名建好，**本地目录暂仍叫 `dsh-novelforge`**
+  （两个 profile 的 `link:` 指向它，改名要等一次重启窗口）。
+
 ## 0.4.0 —— 2026-11-26（首次发布名为 `dsh-ronghuamofang`）
 
 > **包名**：npm 以“与 `dsh-novel-forge` 太像”拒绝了 `dsh-novelforge`（E403）。按作者 2026-11-26

@@ -1,6 +1,6 @@
 {
   "name": "dsh-ronghuamofang",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "绒花墨坊（NovelForge）× DSH：在 DSH 里读章、看批注与结构指标、生成改稿候选（只算不落），并在设置里改墨坊地址。采用归作者，插件不代拍。",
   "keywords": [
     "dsh",
