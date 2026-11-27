@@ -1,7 +1,7 @@
 # AGENTS.md —— 在这个仓库开工前先读这一页
 
 > 只放**已核实的事实**与**不容越界的规则**。写给用户看的在 `README.md`，
-> 与墨坊的分工在 `E:\CODE\CangKu\NovelForge\docs\开发路线-读改接进DSH-20261117.md`。
+> 与墨坊的分工在 `E:\CODE\CangKu\ronghuamofang\docs\开发路线-读改接进DSH-20261117.md`。
 
 ## 0. 一句话
 
