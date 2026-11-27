@@ -32,7 +32,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MUYU46548/dsh-novelforge.git"
+    "url": "git+https://github.com/MUYU46548/dsh-ronghuamofang.git"
   },
   "engines": {
     "node": ">=22.0.0",

@@ -1,7 +1,8 @@
 # dsh-ronghuamofang
 
 > npm 包名 `dsh-ronghuamofang`（原名 `dsh-novelforge` 被 npm 以“与 `dsh-novel-forge` 太像”拒绝）。
-> 本地目录与 GitHub 仓库暂仍叫 `dsh-novelforge`，仓库改名后续单独做；两者不一致时**以包名为准**。
+> GitHub 仓库：[MUYU46548/dsh-ronghuamofang](https://github.com/MUYU46548/dsh-ronghuamofang)。
+> 本地目录暂仍叫 `dsh-novelforge`（两个 profile 的 `link:` 指向它，改名要等重启窗口）。
 
 绒花墨坊（NovelForge）× DSH 的薄插件：让 DSH 会话**看得见判据、出得了候选**，**采用仍归作者**。
 在 DSH 设置里可以直接改墨坊地址与请求超时，不用碰环境变量。

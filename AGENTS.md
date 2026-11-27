@@ -9,7 +9,8 @@
 **不提供"采用"** —— 采用是作者的签字动作。
 
 > **包名 = `dsh-ronghuamofang`**（2026-11-26 改名后发布；原名 `dsh-novelforge` 被 npm 以
-> “与 `dsh-novel-forge` 太像”拒绝）。本地目录与 GitHub 仓库暂仍叫 `dsh-novelforge`。
+> “与 `dsh-novel-forge` 太像”拒绝）。GitHub 仓库已是 `MUYU46548/dsh-ronghuamofang`；
+> 本地目录暂仍叫 `dsh-novelforge`（两个 profile 的 `link:` 指向它，改名要等重启窗口）。
 > 改包名要同时改：`package.json name` / `lib/index.js PLUGIN_NAME` / `lib/health.js` 的
 > `plugin.name` / `client.js` 的两处 id / `cordis.patch.yml` 的 id+name / 自证账本目录 / 两个
 > profile 的依赖与 bundles —— 测试会钉住前五项。
